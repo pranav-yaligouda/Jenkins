@@ -4,7 +4,7 @@ pipeline {
     environment {
         // 🔥 CHANGE THIS: Replace with your DockerHub username
         DOCKERHUB_USERNAME = 'pranavyaligouda'
-        IMAGE_NAME = 'nodejs-express-app'
+        IMAGE_NAME = 'express-app-jenkins'
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
     
