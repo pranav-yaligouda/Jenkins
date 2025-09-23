@@ -135,7 +135,7 @@ stage('Test Container') {
 stage('Push to DockerHub') {
     steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials')]) {
-            sh "docker push pranavyaligouda/nodejs-express-app:${BUILD_NUMBER}"
+            sh "docker push pranavyaligouda/express-app-jenkins:${BUILD_NUMBER}"
         }
     }
 }
@@ -165,7 +165,7 @@ PORT=8080
 ```groovy
 environment {
     DOCKERHUB_USERNAME = 'pranavyaligouda'
-    IMAGE_NAME = 'nodejs-express-app'
+    IMAGE_NAME = 'express-app-jenkins'
     IMAGE_TAG = "${BUILD_NUMBER}"
 }
 ```
@@ -339,8 +339,8 @@ docker ps -a | grep test- | awk '{print $1}' | xargs docker rm -f
 - ✅ Image available on DockerHub
 
 ### **Verification Steps:**
-1. **Check DockerHub**: Visit `https://hub.docker.com/r/pranavyaligouda/nodejs-express-app`
-2. **Test Image**: `docker run -p 8080:8080 pranavyaligouda/nodejs-express-app:latest`
+1. **Check DockerHub**: Visit `https://hub.docker.com/r/pranavyaligouda/express-app-jenkins`
+2. **Test Image**: `docker run -p 8080:8080 pranavyaligouda/express-app-jenkins:latest`
 3. **Verify Response**: `curl http://localhost:8080/`
 
 ## 🚀 Next Steps & Enhancements
