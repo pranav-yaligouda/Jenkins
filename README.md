@@ -285,10 +285,10 @@ curl http://localhost:8080/
 ### **DockerHub Testing:**
 ```bash
 # Pull from registry
-docker pull pranavyaligouda/nodejs-express-app:latest
+docker pull pranavyaligouda/express-app-jenkins:latest
 
 # Run pulled image
-docker run -p 8080:8080 pranavyaligouda/nodejs-express-app:latest
+docker run -p 8080:8080 pranavyaligouda/express-app-jenkins:latest
 ```
 
 ## 📊 Build Metrics
