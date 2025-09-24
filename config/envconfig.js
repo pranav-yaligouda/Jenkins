@@ -5,6 +5,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const { 
-    NODE_ENV,
-    PORT
+    NODE_ENV='development',
+    PORT='8080'
 } = process.env;
