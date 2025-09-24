@@ -110,7 +110,7 @@ stage('Checkout') {
 stage('Build Docker Image') {
     steps {
         echo '🐳 Building Docker image...'
-        sh "docker build -t pranavyaligouda/nodejs-express-app:${BUILD_NUMBER} ."
+        sh "docker build -t pranavyaligouda/express-app-jenkins:${BUILD_NUMBER} ."
     }
 }
 ```
@@ -121,9 +121,10 @@ stage('Build Docker Image') {
 stage('Test Container') {
     steps {
         script {
-            sh "docker run -d --name test-${BUILD_NUMBER} -p 3001:8080 ${IMAGE_NAME}"
+            sh "docker run -d --name test-${BUILD_NUMBER} ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
             sleep(time: 10, unit: 'SECONDS')
-            sh 'curl -f http://localhost:3001/ || exit 1'
+            def containerIP = sh(returnStdout: true, script: "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-${BUILD_NUMBER}").trim()
+            sh "curl -f http://${containerIP}:8080/ || exit 1"
         }
     }
 }
@@ -134,8 +135,13 @@ stage('Test Container') {
 ```groovy
 stage('Push to DockerHub') {
     steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials')]) {
-            sh "docker push pranavyaligouda/express-app-jenkins:${BUILD_NUMBER}"
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                                        usernameVariable: 'DOCKER_USER', 
+                                        passwordVariable: 'DOCKER_PASS')]) {
+            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+            sh "docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+            sh "docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest"
+            sh 'docker logout'
         }
     }
 }
@@ -300,8 +306,8 @@ docker run -p 8080:8080 pranavyaligouda/express-app-jenkins:latest
 - ✅ **Success Rate**: 95%+ after initial setup
 
 ### **Build Artifacts:**
-- 🐳 **Docker Image**: `pranavyaligouda/nodejs-express-app:BUILD_NUMBER`
-- 🏷️ **Latest Tag**: `pranavyaligouda/nodejs-express-app:latest`
+- 🐳 **Docker Image**: `pranavyaligouda/express-app-jenkins:BUILD_NUMBER`
+- 🏷️ **Latest Tag**: `pranavyaligouda/express-app-jenkins:latest`
 - 📋 **Build Logs**: Available in Jenkins console
 
 ## 🔍 Troubleshooting
@@ -396,4 +402,4 @@ This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) 
 
 **⭐ Star this repository if it helped you learn Jenkins CI/CD!**
 
-**🔗 [Live Demo](http://localhost:8080)** | **🐳 [DockerHub](https://hub.docker.com/r/pranavyaligouda/nodejs-express-app)** | **📖 [Documentation](README.md)**
+**🔗 [Live Demo](http://localhost:8080)** | **🐳 [DockerHub](https://hub.docker.com/r/pranavyaligouda/express-app-jenkins)** | **📖 [Documentation](README.md)**

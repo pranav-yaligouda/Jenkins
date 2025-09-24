@@ -4,7 +4,7 @@ import express from 'express';
 const app = express();
 
 app.get('/', (req, res) => {
-    res.send({ message: "Welcome to the Express Server with Jeninks CI/CD"});
+    res.send({ message: "Welcome to the Express Server with Jenkins CI/CD"});
 })
 
 app.get('/health', (req, res) => {

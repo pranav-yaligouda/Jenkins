@@ -29,13 +29,14 @@ pipeline {
                 echo '🧪 Testing Docker container...'
                 script {
                     // Start test container
-                    sh "docker run -d --name test-${BUILD_NUMBER} -p 3001:8080 ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker run -d --name test-${BUILD_NUMBER} ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
                     
                     // Wait for app to start
                     sleep(time: 10, unit: 'SECONDS')
                     
-                    // Test endpoint
-                    sh 'curl -f http://localhost:3001/ || exit 1'
+                    // Get container IP and test directly
+                    def containerIP = sh(returnStdout: true, script: "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-${BUILD_NUMBER}").trim()
+                    sh "curl -f http://${containerIP}:8080/ || exit 1"
                     
                     // Cleanup test container
                     sh "docker stop test-${BUILD_NUMBER} && docker rm test-${BUILD_NUMBER}"
